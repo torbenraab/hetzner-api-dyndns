@@ -18,6 +18,26 @@ https://dns.hetzner.com/api-docs/
 First, a new access token must be created in the [Hetzner DNS Console](https://dns.hetzner.com/). This should be copied immediately, because for security reasons it will not be possible to display the token later. But you can generate as many tokens as you like.
 
 # Usage
+
+## Docker
+You have the possibility to deploy the script as a docker container. To do so use either the following docker-compose script or the [Image from DockerHub](https://hub.docker.com/r/torbenraab/hetzner-api-dyndns).
+
+### docker-compose.yml
+```yml
+version: "3.9"
+services:
+  dyndns:
+    image: torbenraab/hetzner-api-dyndns
+    environment:
+      - HETZNER_AUTH_API_TOKEN=123456789abcdefghijklmnop
+      - HETZNER_ZONE_NAME=example.com
+      - HETZNER_RECORD_TTL=60
+      - HETZNER_RECORD_TYPE=A
+      - HETZNER_RECORD_NAME=domain1.example.com,domain2.example.com
+      - INTERVAL=300
+```
+
+## Script
 You store your Access Token either in the script or set it as an OS environment variable. To store it in the script replace `<your-hetzner-dns-api-token>` in the following line in the script.
 
 ```
@@ -28,7 +48,7 @@ auth_api_token=${HETZNER_AUTH_API_TOKEN:-'<your-hetzner-dns-api-token>'}
 
 As soon as the token is deposited, the script can be called with the appropriate parameters. This allows several DynDNS records to be created in different zones. Optionally, the TTL and the record type can be specified. It is advisable to keep the TTL as low as possible, so that changed records are used as soon as possible.
 ```
-./dyndns.sh [ -z <Zone ID> | -Z <zone_name> ] [-r <Record ID>] -n <Record Name> [-t <TTL>] [-T <Record Type>]
+./dyndns.sh [ -z <Zone ID> | -Z <zone_name> ] [-r <Record IDs>] -n <Record Names> [-t <TTL>] [-T <Record Type>] [-i <Interval>] [-l]
 ```
 
 To keep your DynDNS Records up to date, you have to create a cronjob that calls the script periodically. 
@@ -71,17 +91,19 @@ Type `-h` to display help page.
 ./dyndns.sh -h
 ```
 ```
-exec: ./dyndns.sh -Z <Zone Name> -n <Record Name>
+exec: ./dyndns.sh -Z <Zone Name> -n <Record Names>
 
 parameters:
   -z  - Zone ID
   -Z  - Zone Name
-  -r  - Record ID
-  -n  - Record name
+  -r  - Record IDs (comma seperated)
+  -n  - Record names (comma seperated)
 
 optional parameters:
   -t  - TTL (Default: 60)
   -T  - Record type (Default: A)
+  -i  - Interval (Default: 300 | only with -l)
+  -l  - Loop (Default: false)
 
 help:
   -h  - Show Help 

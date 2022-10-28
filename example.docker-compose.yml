@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+  dyndns:
+    image: torbenraab/hetzner-api-dyndns
+    environment:
+      - HETZNER_AUTH_API_TOKEN=123456789abcdefghijklmnop
+      - HETZNER_ZONE_NAME=example.com
+      - HETZNER_RECORD_TTL=60
+      - HETZNER_RECORD_TYPE=A
+      - HETZNER_RECORD_NAME=domain1.example.com,domain2.example.com
+      - INTERVAL=300
